@@ -1,0 +1,62 @@
+using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
+using System.Net.WebSockets;
+
+namespace SearchEngine
+{
+    public class SearchData
+    {
+        public string Word { get; set; }
+        public string Title { get; set; }
+        public string Url { get; set; }
+    }
+    public void CreateDataStructure(string path)
+    {
+        _searchContent = new List<SearchData>();
+
+        string page = null;
+        string title = null;
+        
+        foreach (var line in File.ReadLines(path))
+        {
+            SearchData searchData = new SearchData();
+
+            if (line.StartsWith("*PAGE:"))
+            {
+                page = line.Substring(6);
+                title = null;
+            }
+            else
+            {
+                if (title == null)
+                {
+                    title = line.Trim();
+                }
+            }
+
+            if (page != null && title != null)
+            {
+                searchData.Url = page;
+                searchData.Title = title;
+                searchData.Word = line.Trim();
+
+                _searchContent.Add(searchData);
+            }
+        }
+    }
+
+    public List<SearchData> FindWord(string word)
+    {
+        List<SearchData> list = new List<SearchData();
+
+        foreach (var searchData in _searchContent)
+        {
+            if (string.Equals(searchData.Word, word, StringComparision.CurrentCultureIgnoreCase))
+            {
+                list.Add(searchData);
+            }
+        }
+        return list;
+    }
+    
